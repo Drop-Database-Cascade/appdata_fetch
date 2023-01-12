@@ -1,12 +1,12 @@
 import requests
 
 # Input the variables that I'm trying to get data for
-app_name = "835599320"
+app_name = "835599320" #App ID is operating specific
 metric_name = "downloads"
 beginning_date = "2022-01-01"
 end_date = "2022-12-31"
 country_code = "us"
-device = "android"
+device = "iphone"
 
 # Function Definition to get a request from the api
 def request(app=str, metric=str, beg_date=str, end_date=str, country_code=str, device=str):
@@ -27,4 +27,4 @@ def request(app=str, metric=str, beg_date=str, end_date=str, country_code=str, d
 answer = request(app_name, metric_name, beginning_date, end_date, country_code, device)
 print(answer)
 
-print("new repo")
+
