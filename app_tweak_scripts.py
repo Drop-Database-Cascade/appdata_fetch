@@ -27,3 +27,4 @@ def request(app=str, metric=str, beg_date=str, end_date=str, country_code=str, d
 answer = request(app_name, metric_name, beginning_date, end_date, country_code, device)
 print(answer)
 
+print("new repo")
