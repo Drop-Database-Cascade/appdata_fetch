@@ -32,3 +32,12 @@ App to fetch data from using Python API.
 ##Soundcloud App ID
 *Android - com.soundcloud.android
 *Iphone - 336353151
+
+
+##Gaana App ID
+*Android - com.gaana
+*Iphone - 585270521
+
+##Wynk App ID
+*Android - com.bsbportal.music
+*Iphone - 845083955
