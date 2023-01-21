@@ -1,10 +1,12 @@
 import requests
+import json
+import csv
 
 # Input the variables that I'm trying to get data for
-app_name = "835599320" #App ID is operating specific
+app_name = "835599320" #App ID is operating system specific
 metric_name = "downloads"
-beginning_date = "2022-01-01"
-end_date = "2022-12-31"
+beginning_date = "2023-01-01"
+end_date = "2023-01-02"
 country_code = "us"
 device = "iphone"
 

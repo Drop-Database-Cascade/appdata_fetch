@@ -2,7 +2,7 @@
 App to fetch data from using Python API.
 
 ##Spotify App Id
-*Android - com.spotify.tv.android 
+*Android - com.spotify.music 
 *Iphone - 324684580
 
 ##Apple Music App ID
