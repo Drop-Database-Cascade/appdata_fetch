@@ -17,8 +17,8 @@ API_KEY = config('KEY')
 # Input the variables that I'm trying to get data for (test variables)
 
 #Master Parameters
-beginning_date = ''
-end_date = ''
+beginning_date = '2020-01-01'
+end_date = '2022-12-31'
 metric_type = 'downloads'
 load_type = 'F' # 'F' for Full or 'D' for Delta
 
@@ -72,8 +72,8 @@ def load_countries(app_name=str):
     country_list = []
     country_path = Path.cwd() / "input_files" / app_name / "countries_list.csv"
     with open(country_path, "r") as f:
-        next(reader)
         reader = csv.reader(f)
+        next(reader)
         for row in reader:
             country_list.append(row[0])
     return country_list
@@ -137,17 +137,17 @@ def create_watermark(app_name=str, end_date=str, beginning_date=str):
     watermark_path = Path.cwd() / "output_files" / app_name / "watermark" / f"watermark_{app_name}.csv"
     watermark_path.parent.mkdir(exist_ok=True, parents=True)
     df = pd.read_csv(sourceapp_output_file)
-    # drop all columns except for 'apps', 'country_code', 'device_name' and 'end_date'
-    df = df[['apps','country', 'device', 'end_date']]
-    df["end_date"] = pd.to_datetime(df["end_date"])
-    df['end_date'] = df['end_date'].dt.strftime("%Y-%m-%d")
-    df_watermark = df.groupby(['apps','country','device'], as_index=False)['end_date'].max()
-    df['end_date'] = df['end_date'].dt.strftime("%Y-%m-%d")
-    df_watermark.to_csv(watermark_path)
+    # drop all columns except for 'apps', 'country_code', 'device_name' and 'date'
+    df = df.drop(columns=[col for col in df.columns if col not in ['app_name', 'country', 'device', 'date']], axis=1)
+    df["date"] = pd.to_datetime(df["date"])
+    df_watermark = df.groupby(['app_name','country','device'], as_index=False)['date'].max()
+    print(df_watermark)
+    df_watermark['date'] = df['date'].dt.strftime("%Y-%m-%d")
+    df_watermark.to_csv(watermark_path, mode='w', index = False, header=True)
     return True
 
 def combine_watermark(app_name=str, end_date=str, beginning_date=str, count=int):
-    input_path = Path.cwd()/ "output_files" / app_name / f"{end_date}_to_{beginning_date}_{app_name}.csv"
+    input_path = Path.cwd() / "output_files" / app_name / "watermark" / f"watermark_{app_name}.csv"
     #Read in input_path
     df = pd.read_csv(input_path)
     # output path
@@ -160,17 +160,37 @@ def combine_watermark(app_name=str, end_date=str, beginning_date=str, count=int)
 
 def lookup_beginning_date(csv_path, apps, country, device):
     df = pd.read_csv(csv_path)
-    next_end_date = df[(df['apps'] == apps) & (df['country'] == country) & (df['device'] == device)]['end_date'].values[0] + pd.Timedelta('1 day')
-    return next_end_date.strftime('%Y-%m-%d')
+    try:
+        next_end_date = df[(df['app_name'] == apps) & (df['country'] == country) & (df['device'] == device)]['date'].values[0] + pd.Timedelta('1 day')
+        next_end_date = next_end_date.strftime('%Y-%m-%d')
+    except:
+        print(f"No watermark value for country code: {country}, therefore conducting full load from 1 Jan 2010")
+        next_end_date = '2010-01-01'
+    return next_end_date
 
 
 def main():
+#Set Variables
+    
+    #Fetch API Key from local env
+    API_KEY = config('KEY')
+
+    # Input the variables that I'm trying to get data for (test variables)
+
+    #Master Parameters
+    beginning_date = '2020-01-01'
+    end_date = '2022-12-31'
+    metric_type = 'downloads'
+    load_type = 'F' # 'F' for Full or 'D' for Delta
+
+    # Main Loop
+
     try:
         for app_name, devices in music_apps.items(): 
             # Set loop counter to be reset for each app
             count = 0  
-            wm_count = 0        
-            country_list = load_countries(app_name)
+            wm_count = 0       
+            country_list = load_countries(app_name)  
             for country in country_list:
                 for device, code in devices.items():
 
@@ -195,7 +215,8 @@ def main():
                     #Write output to CSV
                     csv_write(output_df, app_name, count, beginning_date, end_date)
                     count += 1
-            
+                    break
+                break
             #Get Watermark for each app
             create_watermark(app_name, end_date, beginning_date)
 
@@ -203,11 +224,12 @@ def main():
             combine_watermark(app_name, end_date, beginning_date, wm_count)
             wm_count += 1
             break
+       
 
         return True
 
     except Exception as e:
-        return False
+        raise e
 
 
 if __name__ == "__main__":
