@@ -17,8 +17,8 @@ API_KEY = config('KEY')
 # Input the variables that I'm trying to get data for (test variables)
 
 #Master Parameters
-beginning_date = '2020-01-01'
-end_date = '2022-12-31'
+beginning_date = '2021-01-01'
+end_date = '2021-01-01'
 metric_type = 'downloads'
 load_type = 'F' # 'F' for Full or 'D' for Delta
 
@@ -82,7 +82,7 @@ def load_countries(app_name=str):
 def request(app=str, metric=str, beg_date=str, end_date=str, country_code=str, device=str,api_key=str):
     acceptable_device_input = ['android', 'iphone']
     assert device in acceptable_device_input
-    url = f"https://public-api.apptweak.com/api/public/store/apps/metrics/history.json?apps={app}&metrics={metric}%2Cratings&start_date={beg_date}&end_date={end_date}&country={country_code}&device={device}"
+    url = f"https://public-api.apptweak.com/api/public/store/apps/metrics/history.json?apps={app}&metrics={metric}&start_date={beg_date}&end_date={end_date}&country={country_code}&device={device}"
 
     headers = {
         "accept": "application/json",
@@ -91,11 +91,11 @@ def request(app=str, metric=str, beg_date=str, end_date=str, country_code=str, d
 
     response = requests.get(url, headers=headers)
 
-    return response.text
+    return response.json()
 
 # Load the JSON data
 
-data = {"result":{"835599320":{"downloads":[{"value":23,"date":"2022-01-01","precision":None},{"value":59,"date":"2022-01-02","precision":0.25},{"value":42,"date":"2022-01-03","precision":0.25}],"ratings":[{"value":None,"breakdown":None,"date":"2022-01-01"},{"value":None,"breakdown":None,"date":"2022-01-02"},{"value":None,"breakdown":None,"date":"2022-01-03"}]}},"metadata":{"request":{"path":"/api/public/store/apps/metrics/history.json","params":{"device":"android","country":"us","language":"us","start_date":"2022-01-01","end_date":"2022-01-03","apps":["835599320"],"metrics":["downloads","ratings"]},"cost":1,"max_credit_cost":613,"status":200},"response":None}}
+#data = {"result":{"835599320":{"downloads":[{"value":23,"date":"2022-01-01","precision":None},{"value":59,"date":"2022-01-02","precision":0.25},{"value":42,"date":"2022-01-03","precision":0.25}],"ratings":[{"value":None,"breakdown":None,"date":"2022-01-01"},{"value":None,"breakdown":None,"date":"2022-01-02"},{"value":None,"breakdown":None,"date":"2022-01-03"}]}},"metadata":{"request":{"path":"/api/public/store/apps/metrics/history.json","params":{"device":"android","country":"us","language":"us","start_date":"2022-01-01","end_date":"2022-01-03","apps":["835599320"],"metrics":["downloads","ratings"]},"cost":1,"max_credit_cost":613,"status":200},"response":None}}
 
 def extract_metric_to_df(json_dict, metric_name=str):
     # Extract the downloads data
@@ -164,7 +164,7 @@ def lookup_beginning_date(csv_path, apps, country, device):
         next_end_date = df[(df['app_name'] == apps) & (df['country'] == country) & (df['device'] == device)]['date'].values[0] + pd.Timedelta('1 day')
         next_end_date = next_end_date.strftime('%Y-%m-%d')
     except:
-        print(f"No watermark value for country code: {country}, therefore conducting full load from 1 Jan 2010")
+        print(f"No watermark value for country code: {country}, therefore conducting full load from App Start Date")
         next_end_date = '2010-01-01'
     return next_end_date
 
@@ -178,8 +178,8 @@ def main():
     # Input the variables that I'm trying to get data for (test variables)
 
     #Master Parameters
-    beginning_date = '2020-01-01'
-    end_date = '2022-12-31'
+    beginning_date = '2021-01-01'
+    end_date = '2021-01-5'
     metric_type = 'downloads'
     load_type = 'F' # 'F' for Full or 'D' for Delta
 
@@ -203,8 +203,9 @@ def main():
                     else:
                         raise Exception('Invalid load type provided')
 
-                    #api_response = request(code, metric_type, beginning_date, end_date, country, device, API_KEY)
-                    api_response = data
+                    api_response = request(code, metric_type, beginning_date, end_date, country, device, API_KEY)
+                    print(api_response)
+                    #api_response = {"result":{"com.spotify.music":{"downloads":[{"value":151880,"date":"2021-01-01","precision":0.25},{"value":143522,"date":"2021-01-02","precision":0.25},{"value":117403,"date":"2021-01-03","precision":0.25},{"value":101042,"date":"2021-01-04","precision":0.25},{"value":89371,"date":"2021-01-05","precision":0.25}]}},"metadata":{"request":{"path":"/api/public/store/apps/metrics/history.json","params":{"device":"android","country":"in","language":"in","start_date":"2021-01-01","end_date":"2021-01-05","apps":["com.spotify.music"],"metrics":["downloads"]},"cost":701,"max_credit_cost":701,"status":200},"response":None}}
                     #Extract downloads from request output
                     output_df = extract_metric_to_df(api_response, metric_type)
                 

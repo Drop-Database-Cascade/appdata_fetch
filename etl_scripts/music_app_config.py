@@ -1,7 +1,7 @@
-#Define dictionary of possible combinations
+#Define dictionary of all music streaming apps along with the corresponding device ids.
 music_apps = {
     "spotify": {
-        "android": "com.spotify.tv.android",
+        "android": "com.spotify.music",
         "iphone": 324684580
     },
     "apple_music": {
@@ -31,10 +31,13 @@ music_apps = {
     "soundcloud_app": {
         "android": "com.soundcloud.android",
         "iphone": 336353151
+    },
+    "gaana": {
+        "android": "com.gaana",
+        "iphone": 585270521
+    },
+    "wynk": {
+        "android": "com.bsbportal.music",
+        "iphone": 845083955
     }
 }
-
-for app_name, devices in music_apps.items():
-    print(devices)
-    for device, code in devices.items():
-        print(code)
