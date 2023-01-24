@@ -5,6 +5,7 @@ import pandas as pd
 from pandas import DateOffset
 import json
 from pathlib import Path
+import os
 
 class AppMetrics:
     def __init__(self, app_name=str, API_KEY=str, beginning_date=str, end_date=str, metric_name=str):
@@ -17,7 +18,7 @@ class AppMetrics:
     def load_countries(self):
         #load countries into a list based on input config file
         country_list = []
-        country_path = Path.cwd() / "data" / "input_files" / self.app_name / "countries_list.csv"
+        country_path = os.path.join(os.path.dirname(os.getcwd()), "data", "input_files", self.app_name, "countries_list.csv")
         with open(country_path, "r") as f:
             reader = csv.reader(f)
             next(reader)
@@ -79,8 +80,7 @@ class AppMetrics:
 
     # Write the DataFrame to a CSV file
     def csv_write(self, df, counter=int, beginning_date=str):
-        output_path = Path.cwd()/ "data" / "output_files" / self.app_name / f"{self.end_date}_to_{beginning_date}_{self.app_name}.csv"
-        output_path.parent.mkdir(exist_ok=True, parents=True)
+        output_path = os.path.join(os.path.dirname(os.getcwd()), "data", "output_files", self.app_name , f"{self.end_date}_to_{beginning_date}_{self.app_name}.csv")
         if counter < 1:    
             df.to_csv(output_path, mode='w', index = False, header=True)
         else:
@@ -89,26 +89,23 @@ class AppMetrics:
 
 
     def create_watermark(self, beginning_date=str):
-        sourceapp_output_file = Path.cwd()/ "data" / "output_files" / self.app_name / f"{self.end_date}_to_{beginning_date}_{self.app_name}.csv"
-        sourceapp_output_file.parent.mkdir(exist_ok=True, parents=True)
-        watermark_path = Path.cwd() / "data" / "output_files" / self.app_name / "watermark" / f"watermark_{self.app_name}.csv"
-        watermark_path.parent.mkdir(exist_ok=True, parents=True)
+        sourceapp_output_file = os.path.join(os.path.dirname(os.getcwd()), "data", "output_files", self.app_name , f"{self.end_date}_to_{beginning_date}_{self.app_name}.csv")
+        watermark_path = os.path.join(os.path.dirname(os.getcwd()), "data", "output_files", self.app_name , "watermark", f"watermark_{self.app_name}.csv")
         df = pd.read_csv(sourceapp_output_file)
         # drop all columns except for 'apps', 'country_code', 'device_name' and 'date'
         df = df.drop(columns=[col for col in df.columns if col not in ['app_name', 'country', 'device', 'date']], axis=1)
         df["date"] = pd.to_datetime(df["date"])
         df_watermark = df.groupby(['app_name','country','device'], as_index=False)['date'].max()
-        print(df_watermark)
         df_watermark['date'] = df['date'].dt.strftime("%Y-%m-%d")
         df_watermark.to_csv(watermark_path, mode='w', index = False, header=True)
         return True
 
     def combine_watermark(self, count=int):
-        input_path = Path.cwd() / "data" / "output_files" / self.app_name / "watermark" / f"watermark_{self.app_name}.csv"
+        input_path = os.path.join(os.path.dirname(os.getcwd()), "data", "output_files", self.app_name , "watermark", f"watermark_{self.app_name}.csv")
         #Read in input_path
         df = pd.read_csv(input_path)
         # output path
-        output_path = Path.cwd()/ "data" / "output_files" / "master_watermark" / "combined_watermark.csv"
+        output_path = os.path.join(os.path.dirname(os.getcwd()), "data", "output_files", "master_watermark" , "combined_watermark.csv")
         if count < 1:    
             df.to_csv(output_path, mode='w', index = False, header=True)
         else:

@@ -17,7 +17,7 @@ def main():
 
     #Import required python libraries - done within the function according to airflow best practices
     from decouple import config
-    from pathlib import Path
+    import os
 
     #Import python file dependencies
     from app_metric_methods import AppMetrics
@@ -50,19 +50,19 @@ def main():
                     #Lookup beginning date from watermark table if load type is delta
                     #Beginning date for delta will be 1 day after the previous pipeline was run
                     if load_type == 'D':
-                        csv_path = Path.cwd()/ "data" / "output_files" / "master_watermark" / "combined_watermark.csv"
+                        csv_path = os.path.join(os.path.dirname(os.getcwd()), "data", "output_files", "master_watermark", "combined_watermark.csv")
                         beginning_date = app_metrics.lookup_beginning_date(csv_path, country, device)
                     elif load_type =='F':
                         pass
                     else:
                         raise Exception('Invalid load type provided')
 
-                    api_response = app_metrics.request(code, beginning_date, country, device)
+                    #api_response = app_metrics.request(code, beginning_date, country, device)
                 
-                    print(api_response)
+                    #print(api_response)
 
                     #below api response commented out as an example response to use for testing
-                    #api_response = {"result":{"com.spotify.music":{"downloads":[{"value":151880,"date":"2021-01-01","precision":0.25},{"value":143522,"date":"2021-01-02","precision":0.25},{"value":117403,"date":"2021-01-03","precision":0.25},{"value":101042,"date":"2021-01-04","precision":0.25},{"value":89371,"date":"2021-01-05","precision":0.25}]}},"metadata":{"request":{"path":"/api/public/store/apps/metrics/history.json","params":{"device":"android","country":"in","language":"in","start_date":"2021-01-01","end_date":"2021-01-05","apps":["com.spotify.music"],"metrics":["downloads"]},"cost":701,"max_credit_cost":701,"status":200},"response":None}}
+                    api_response = {"result":{"com.spotify.music":{"downloads":[{"value":151880,"date":"2021-01-01","precision":0.25},{"value":143522,"date":"2021-01-02","precision":0.25},{"value":117403,"date":"2021-01-03","precision":0.25},{"value":101042,"date":"2021-01-04","precision":0.25},{"value":89371,"date":"2021-01-05","precision":0.25}]}},"metadata":{"request":{"path":"/api/public/store/apps/metrics/history.json","params":{"device":"android","country":"in","language":"in","start_date":"2021-01-01","end_date":"2021-01-05","apps":["com.spotify.music"],"metrics":["downloads"]},"cost":701,"max_credit_cost":701,"status":200},"response":None}}
                     
                     #Extract downloads from request output
                     output_df = app_metrics.extract_metric_to_df(api_response)
