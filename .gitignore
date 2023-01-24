@@ -1,0 +1,13 @@
+#Environment
+.env
+entrypoint.sh
+Dockerfile
+etl_scripts/__pycache__
+
+#Data
+#data/output_files/
+
+#airflow
+airflow/logs/
+airflow/dags/__pycache__
+airflow/airflow.db
