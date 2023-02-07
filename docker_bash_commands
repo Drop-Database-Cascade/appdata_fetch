@@ -1,0 +1,15 @@
+# postgres
+sudo docker build -t airflow_postgres -f docker/airflow_postgres .
+sudo docker run -d --name airflow_postgres -e POSTGRES_USER=airflow -e POSTGRES_PASSWORD=airflow -e POSTGRES_DB=airflow -p 5433:5432 airflow_postgres
+
+# data
+sudo docker build -t seed_data -f docker/seed_data .
+sudo docker run -v /mnt/c/Apptweak_Data/data:/appdata_fetch_app/data --name seed_data  -d seed_data 
+
+# main container
+sudo docker build -t main_app -f docker/main_app .
+sudo docker run -v /mnt/c/Apptweak_Data/data:/appdata_fetch_app/data --name main_app  -d main_app 
+
+# path = appdata_fetch_app/data
+# API_KEY=mEVu0O4Co6F1W1BcdGiofYHk4yopip - use this for testing
+

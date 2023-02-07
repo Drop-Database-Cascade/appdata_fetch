@@ -1,0 +1,4 @@
+/etl_scripts/__pycache__/
+/testing/__pycache__/
+/testing/.pytest_cache/
+/airflow/dags/__pycache__/

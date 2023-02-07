@@ -16,7 +16,10 @@
 #Import python file dependencies
 from app_metric_classes import app_metrics_local_file_operations
 from local_file_operations_class import local_file_operations
+import os, sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '/data/input_files/')))
 from music_app_config import music_apps
+
 
 def app_metrics_fetch(metric_type:str, load_type:str, end_date:str):
     assert len(load_type) == 1

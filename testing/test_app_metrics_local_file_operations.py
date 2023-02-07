@@ -100,3 +100,6 @@ def teardown_module(module):
     shutil.copy(temp_file, original_wm_file)
     os.remove(temp_file)
     
+    #Remove Test Directory
+    shutil.rmtree(obj.app_data_csv_output)
+    
