@@ -1,6 +1,6 @@
 # postgres
 sudo docker build -t airflow_postgres -f docker/airflow_postgres .
-sudo docker run -d --name airflow_postgres -e POSTGRES_USER=airflow -e POSTGRES_PASSWORD=airflow -e POSTGRES_DB=airflow -p 5433:5432 airflow_postgres
+sudo docker run -d --network my-network --name airflow_postgres -e POSTGRES_USER=airflow -e POSTGRES_PASSWORD=airflow -e POSTGRES_DB=airflow -p 5433:5432 airflow_postgres
 
 # data
 sudo docker build -t seed_data -f docker/seed_data .
@@ -8,8 +8,18 @@ sudo docker run -v /mnt/c/Apptweak_Data/data:/appdata_fetch_app/data --name seed
 
 # main container
 sudo docker build -t main_app -f docker/main_app .
-sudo docker run -v /mnt/c/Apptweak_Data/data:/appdata_fetch_app/data --name main_app  -d main_app 
+sudo docker run -p 8080:8080 -v /mnt/c/Apptweak_Data/data:/appdata_fetch_app/data --network my-network --name main_app  -d main_app -e API_KEY=mEVu0O4Co6F1W1BcdGiofYHk4yopip
 
 # path = appdata_fetch_app/data
 # API_KEY=mEVu0O4Co6F1W1BcdGiofYHk4yopip - use this for testing
 
+# Create a custom network - for testing without docker compose
+sudo docker network create my-network
+
+
+ docker-compose up -d
+
+export HOST_FILE_DIR=/mnt/c/api_appdata_fetch
+
+
+$env:HOST_FILE_DIR="/apptweakapi_app"

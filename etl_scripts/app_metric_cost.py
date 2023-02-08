@@ -62,7 +62,7 @@ def check_total_credit_cost(metric_type:str, end_date:str, load_type:str, budget
         #Insert Total Cost
         lfo.insert_line_below_header_csv(relative_cost_path, ['Total Cost', '', total_cost, '', ''])
 
-        #app_metrics.check_cost_budget(budget,total_cost)
+        app_metrics.check_cost_budget(budget,total_cost)
         return True
 
     except Exception as e:

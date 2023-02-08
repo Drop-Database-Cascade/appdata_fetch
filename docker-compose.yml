@@ -1,0 +1,37 @@
+version: '3'
+services:
+  airflow_postgres:
+    build:
+      context: .
+      dockerfile: docker/airflow_postgres.dockerfile
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - ${HOST_FILE_DIR-/app_data_api}/airflow_postgres:/var/lib/postgresql/data
+
+  seed_data:
+    build:
+      context: .
+      dockerfile: docker/seed_data.dockerfile
+    volumes:
+      - ${HOST_FILE_DIR-/app_data_api}/data:/appdata_fetch_app/data
+  main_app:
+    build:
+      context: .
+      dockerfile: docker/main_app.dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      - airflow_postgres
+      - seed_data
+    volumes:
+      - ${HOST_FILE_DIR-/app_data_api}/data:/appdata_fetch_app/data
+    env_file:
+      - .env
+volumes:
+  host_data:
+    external: false
