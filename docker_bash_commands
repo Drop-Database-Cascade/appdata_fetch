@@ -1,6 +1,6 @@
 # postgres
 sudo docker build -t airflow_postgres -f docker/airflow_postgres .
-sudo docker run -d --network my-network --name airflow_postgres -e POSTGRES_USER=airflow -e POSTGRES_PASSWORD=airflow -e POSTGRES_DB=airflow -p 5433:5432 airflow_postgres
+sudo docker run -d --network my-network --name airflow_postgres -e POSTGRES_USER=airflow -e POSTGRES_PASSWORD=airflow -e POSTGRES_DB=airflow -p 5433:5432 airflow_postgres -v /mnt/c/Apptweak_Data/airflow_postgres:/var/lib/postgresql/data
 
 # data
 sudo docker build -t seed_data -f docker/seed_data .

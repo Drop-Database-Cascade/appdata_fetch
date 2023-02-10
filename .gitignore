@@ -6,12 +6,12 @@ etl_scripts/__pycache__
 testing/__pycache__
 testing/.pytest_cache
 
-#Data
-#data/output_files/
-
 #airflow
 airflow/logs/
 airflow/dags/__pycache__
 airflow/airflow.db
 webserver.log
 airflow/airflow-webserver.pid
+
+#To Do file
+todo.txt

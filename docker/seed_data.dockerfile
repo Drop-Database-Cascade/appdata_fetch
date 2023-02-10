@@ -1,4 +1,4 @@
-FROM python:3.10-alpine
+FROM python:3.8-alpine
 
 RUN apk add --no-cache bash --repository http://dl-cdn.alpinelinux.org/alpine/v3.15/main ca-certificates curl
 

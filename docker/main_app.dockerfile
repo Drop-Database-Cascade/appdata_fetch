@@ -4,7 +4,7 @@ FROM python:3.9-slim
 
 ENV AIRFLOW_HOME=/appdata_fetch_app/airflow
 
-#Setting to  port 5433 to match postgrea container config
+#Setting to  port 5432 to match postgrea container config
 ENV AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow_postgres:5432/airflow
 
 ENV AIRFLOW__CORE__EXECUTOR=LocalExecutor

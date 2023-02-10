@@ -18,6 +18,7 @@ metric_type = json.loads(Variable.get("app_metric_fetch_config"))["metric_type"]
 load_type = json.loads(Variable.get("app_metric_fetch_config"))["load_type"]
 end_date = json.loads(Variable.get("app_metric_fetch_config"))["end_date"]
 budget = json.loads(Variable.get("app_metric_fetch_config"))["budget"]
+demo_flag = int(Variable.get("demo_flag", default_var=1))
 
 # Define default_args dictionary to pass to the DAG
 default_args = {
@@ -52,7 +53,7 @@ fetch_metrics = PythonOperator(
     task_id='fetch_metrics_all_apps',
     python_callable=app_metric_fetch,
     provide_context=True,
-    op_args=[metric_type, load_type, end_date],
+    op_args=[metric_type, load_type, end_date, demo_flag],
     dag=dag,
 )
 

@@ -11,14 +11,13 @@ services:
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
     volumes:
-      - ${HOST_FILE_DIR-/app_data_api}/airflow_postgres:/var/lib/postgresql/data
-
+      - postgres-data:/var/lib/postgresql/data
   seed_data:
     build:
       context: .
       dockerfile: docker/seed_data.dockerfile
     volumes:
-      - ${HOST_FILE_DIR-/app_data_api}/data:/appdata_fetch_app/data
+      - ${HOST_FILE_DIR-/mnt/c/apptweak_api}/data:/appdata_fetch_app/data
   main_app:
     build:
       context: .
@@ -29,9 +28,9 @@ services:
       - airflow_postgres
       - seed_data
     volumes:
-      - ${HOST_FILE_DIR-/app_data_api}/data:/appdata_fetch_app/data
+      - ${HOST_FILE_DIR-/mnt/c/apptweak_api}/data:/appdata_fetch_app/data
     env_file:
       - .env
 volumes:
-  host_data:
-    external: false
+  postgres-data:
+    driver: local

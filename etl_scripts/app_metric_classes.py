@@ -76,7 +76,7 @@ class app_metrics_requests:
     #Validate the cost of a request will meet budget requirements
     def check_cost_budget(self, budget:int, total_cost:int):
         if budget < total_cost:
-            raise ValueError("Budget is less than total cost")
+            raise ValueError(f"Budget is less than total cost of {total_cost} credits, check cost summary csv for more details")
         else:
             return True
     
@@ -110,7 +110,7 @@ class app_metrics_local_file_operations(local_file_operations, app_metrics_reque
         df = df.drop(columns=[col for col in df.columns if col not in ['app_name', 'country', 'device', 'date']], axis=1)
         df["date"] = pd.to_datetime(df["date"])
         df_watermark = df.groupby(['app_name','country','device'], as_index=False)['date'].max()
-        df_watermark['date'] = df['date'].dt.strftime("%Y-%m-%d")
+        df_watermark['date'] = df_watermark['date'].dt.strftime("%Y-%m-%d")
         df_watermark.to_csv(watermark_path, mode='w', index = False, header=True)
         return True
     
