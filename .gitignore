@@ -12,6 +12,8 @@ airflow/dags/__pycache__
 airflow/airflow.db
 webserver.log
 airflow/airflow-webserver.pid
+airflow/airflow.cfg
+airflow/webserver_config.py
 
 #To Do file
 todo.txt
