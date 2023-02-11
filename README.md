@@ -16,7 +16,7 @@ More info on the AppTweek Api data source is available here: https://developers.
 This service runs a PostgreSQL database for use with Apache Airflow. The database is built using the `docker/airflow_postgres.dockerfile` and is exposed on port 5433 for the local machine and 5432 for other containers in the docker network. The environment variables `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB` are set to `airflow`, `airflow`, and `airflow` respectively. The database data is persisted in a volume named `postgres-data`.
 
 ### seed_data
-This service seeds the data for the main application. The data is built using the `docker/seed_data.dockerfile` and is mapped to the host directory `${HOST_FILE_DIR-/mnt/c/apptweak_api}/data` at `/appdata_fetch_app/data`.
+This service seeds the data for the main application. The data is built using the `docker/seed_data.dockerfile` and is mapped to the host directory `${HOST_FILE_DIR-/mnt/c/apptweak_api}/data` at `/appdata_fetch_app/data`. The resulting directory mounted locally is where users can edit the generated input data and read the output files produced by the main application.
 
 ### main_app
 This service is the main application. It is built using the `docker/main_app.dockerfile` and exposed on port 8080. This service depends on the `airflow_postgres` and `seed_data` services and maps the host directory `${HOST_FILE_DIR-/mnt/c/apptweak_api}/data` at `/appdata_fetch_app/data`. The API_KEY required for this app should be stored in a `.env` file saved in the project root. The Main Airflow App consists of two dags: extract_app_data_ETL and test_extract_app_data_ETL.
@@ -29,7 +29,7 @@ extract_app_data_ETL does the following:
     4. Fetch Metrics All Apps: Based on user-input files (country list CSVs, music apps Python file) and Airflow variables, sends requests to the AppTweak API and writes the output to CSV files in the respective output folders. The DAG order is run as follows: check_api_costs >> [dim_country_load, dim_date_load] >> fetch_metrics.
 
 test_extract_app_data_ETL does the following:
-1. Use pytest to unit test each of the class methods used by the extract_app_data_ETL dag.
+    1. Use pytest to unit test each of the class methods used by the extract_app_data_ETL dag.
 
 ## How to get started
 1. Clone this repository.
@@ -56,12 +56,160 @@ Edit the countries list csv for each app, this is the country list that gets loo
 - budget: This is the amount of AppTweak credits you are willing to spend, the main dag will run a check to calculate if the total cost of the API request will exceed your budget and fail the pipeline if so.
 - demo_flag: 1 for true, 0 for False - If set to true, will run the app_metrics_ETL pipeline using dummy data and only loop through 1 app, 1 country, 1 device. This will not send an API request and allows a safe integration test.
 
-
-
 ## Notes
 - The `postgres-data` volume is created using the local driver.
 - The host directory for data mapping can be overridden by setting the `HOST_FILE_DIR` environment variable.
 - This app was developed using WSL Ubuntu distribution for windows, other OS configurations have not been tested.
 - If using windows, it's recommended you run docker compose from the project root using WSL terminal (Ubuntu) - it's recommended you set the HOST_FILE_DIR to a path in /mnt/c/... so that you can interact with the input and output files using windows programs. This was tested to be the most effective and reliable configuration. Once docker compose has been run, you may find it convenient to start and stop the container app using Docker Desktop in Windows. 
 - Using the AppTweak API requires that you create an account with AppTweak API. Large data requests can be quite expensive - use at your own risk.
+
+## Code Structure
+- An inheritance structure of the classes utilised by extract_app_data_dag is located at .class_inheritance_structure.pdf
+- Airflow dags are located at ./airflow/dags
+- Core ETL code called by extract_app_data_dag located at ./etl_scripts
+- Unit test functions using pytest are located at./testing
+- Dockerfiles and dependencies for each of the services located at./docker
+- docker-compose located at .
+
+## Project repository directory structure
+.
+├── README.md
+├── airflow
+│   ├── dags
+│   │   ├── extract_app_data_dag.py
+│   │   └── test_extract_app_data_dag.py
+├── data
+│   ├── input_files
+│   │   ├── amazon_app
+│   │   │   └── countries_list.csv
+│   │   ├── apple_music
+│   │   │   └── countries_list.csv
+│   │   ├── deezer_app
+│   │   │   └── countries_list.csv
+│   │   ├── gaana
+│   │   │   └── countries_list.csv
+│   │   ├── joox
+│   │   │   └── countries_list.csv
+│   │   ├── resso_app
+│   │   │   └── countries_list.csv
+│   │   ├── soundcloud_app
+│   │   │   └── countries_list.csv
+│   │   ├── spotify
+│   │   │   └── countries_list.csv
+│   │   ├── tidal_app
+│   │   │   └── countries_list.csv
+│   │   ├── wynk
+│   │   │   └── countries_list.csv
+│   │   └── youtube_music
+│   │       └── countries_list.csv
+|   |   └── music_app_config.py
+│   └── output_files
+│       ├── amazon_app
+│       │   └── watermark
+│       ├── apple_music
+│       │   └── watermark
+│       ├── deezer_app
+│       │   └── watermark
+│       ├── dim_tables
+│       ├── expected_cost
+│       ├── gaana
+│       │   └── watermark
+│       ├── joox
+│       │   └── watermark
+│       ├── master_watermark
+│       ├── resso_app
+│       │   └── watermark
+│       ├── soundcloud_app
+│       │   └── watermark
+│       ├── spotify
+│       │   └── watermark
+│       ├── tidal_app
+│       │   └── watermark
+│       ├── wynk
+│       │   └── watermark
+│       └── youtube_music
+│           └── watermark
+├── docker
+│   ├── airflow_postgres.dockerfile
+│   ├── init-airflow_user-db.sql
+│   ├── main_app.dockerfile
+│   ├── main_app_entrypoint.sh
+│   ├── seed_data.dockerfile
+│   └── seed_data_entrypoint.sh
+├── etl_scripts
+│   ├── app_metric_classes.py
+│   ├── app_metric_cost.py
+│   ├── app_metric_fetch.py
+│   ├── app_metric_pricing_matrix.py
+│   ├── country_codes_config.py
+│   ├── dim_country.py
+│   ├── dim_date.py
+│   ├── dim_table_class.py
+│   ├── local_file_operations_class.py
+│   └── music_app_config.py
+├── testing
+│   ├── test_app_metrics_local_file_operations.py
+│   ├── test_app_metrics_request.py
+│   ├── test_dim_table_class.py
+│   └── test_local_file_operations_class_test.py
+├── .env
+├── requirements.txt
+├── docker_bash_commands
+├── docker-compose.yml
+
+
+## Local mounted file directory structure (shared with main_app container and host)
+.
+└── data
+    ├── input_files
+    │   ├── amazon_app
+    │   │   └── countries_list.csv
+    │   ├── apple_music
+    │   │   └── countries_list.csv
+    │   ├── deezer_app
+    │   │   └── countries_list.csv
+    │   ├── gaana
+    │   │   └── countries_list.csv
+    │   ├── joox
+    │   │   └── countries_list.csv
+    │   ├── resso_app
+    │   │   └── countries_list.csv
+    │   ├── soundcloud_app
+    │   │   └── countries_list.csv
+    │   ├── spotify
+    │   │   └── countries_list.csv
+    │   ├── tidal_app
+    │   │   └── countries_list.csv
+    │   ├── wynk
+    │   │   └── countries_list.csv
+    │   ├── youtube_music
+    │   |   └── countries_list.csv
+    |   └── music_app_config.py
+    └── output_files
+        ├── amazon_app
+        │   └── watermark
+        ├── apple_music
+        │   └── watermark
+        ├── deezer_app
+        │   └── watermark
+        ├── dim_tables
+        ├── expected_cost
+        ├── gaana
+        │   └── watermark
+        ├── joox
+        │   └── watermark
+        ├── master_watermark
+        ├── resso_app
+        │   └── watermark
+        ├── soundcloud_app
+        │   └── watermark
+        ├── spotify
+        │   └── watermark
+        ├── tidal_app
+        │   └── watermark
+        ├── wynk
+        │   └── watermark
+        └── youtube_music
+            └── watermark
+
 
