@@ -74,6 +74,7 @@ Edit the countries list csv for each app, this is the country list that gets loo
 - docker-compose located at .
 
 ## Project repository directory structure
+```bash
 .
 ├── README.md
 ├── airflow
@@ -165,8 +166,11 @@ Edit the countries list csv for each app, this is the country list that gets loo
 ├── docker_bash_commands
 ├── docker-compose.yml
 
+```
 
 ## Local mounted file directory structure (shared with main_app container and host)
+
+```bash
 .
 └── data
     ├── input_files
@@ -219,5 +223,5 @@ Edit the countries list csv for each app, this is the country list that gets loo
         │   └── watermark
         └── youtube_music
             └── watermark
-
+```
 
