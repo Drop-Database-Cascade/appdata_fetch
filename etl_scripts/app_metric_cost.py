@@ -5,10 +5,11 @@
 #Import python file dependencies
 from app_metric_classes import app_metrics_local_file_operations
 from local_file_operations_class import local_file_operations
-from music_app_config import music_apps
 from country_codes_config import country_codes
 from app_metric_pricing_matrix import app_metric_pricing_matrix
-
+import os, sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '/data/input_files/')))
+from music_app_config import music_apps
 
 def check_total_credit_cost(metric_type:str, end_date:str, load_type:str, budget:int):
     assert len(load_type) == 1
@@ -61,7 +62,7 @@ def check_total_credit_cost(metric_type:str, end_date:str, load_type:str, budget
         #Insert Total Cost
         lfo.insert_line_below_header_csv(relative_cost_path, ['Total Cost', '', total_cost, '', ''])
 
-        #app_metrics.check_cost_budget(budget,total_cost)
+        app_metrics.check_cost_budget(budget,total_cost)
         return True
 
     except Exception as e:

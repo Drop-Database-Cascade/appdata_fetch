@@ -1,20 +1,15 @@
 #This file contains the local_file_operations class
 import csv
 import os
-from decouple import Config, RepositoryEnv
 
 class local_file_operations:
 # Fetches project root directory from the config file. Contains methods to interact with the local file system. All methods are currently csv based.
+#Change Project Root Here to point to data locations
 
-    def __init__(self):
-        
-        #Fetch Project Root from local env
-        curfile_dir = os.path.dirname(os.path.abspath(__file__))
-        env_file = os.path.join(os.path.dirname(curfile_dir), ".env")
-        self.config = Config(RepositoryEnv(env_file))
+    def __init__(self):        
 
-        #Def Parent variables
-        self.PROJECT_ROOT_PATH = self.config("PROJECT_ROOT_PATH")
+        #Def Parent variables - updated root path to be passed directly rather than from .env
+        self.PROJECT_ROOT_PATH = os.environ.get("PROJECT_ROOT_PATH")
         self.output_path = os.path.join(self.PROJECT_ROOT_PATH, "data", "output_files")
         self.input_path = os.path.join(self.PROJECT_ROOT_PATH, "data", "input_files")     
 
