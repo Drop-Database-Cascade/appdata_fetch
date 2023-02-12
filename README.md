@@ -155,10 +155,12 @@ Edit the countries list csv for each app, this is the country list that gets loo
 │   ├── test_dim_table_class.py
 │   └── test_local_file_operations_class_test.py
 ├── diagrams
-│   ├── airflow_dag_diagram.pdf
+│   ├── airflow_dag_diagram.pdfs
 │   ├── class_inheritance_structure.pdf
 │   └── deployment_architecture_diagram.pdf
 ├── .env
+├── contributors.md
+├── license.md
 ├── requirements.txt
 ├── docker_bash_commands
 ├── docker-compose.yml
