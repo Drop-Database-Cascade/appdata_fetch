@@ -31,7 +31,8 @@ extract_app_data_ETL does the following:
     The DAG order is run as follows: check_api_costs >> [dim_country_load, dim_date_load] >> fetch_metrics.
 
 test_extract_app_data_ETL does the following:
-    1. Use pytest to unit test each of the class methods used by the extract_app_data_ETL dag.
+
+    1.  Use pytest to unit test each of the class methods used by the extract_app_data_ETL dag.
 
 ## How to get started
 1. Clone this repository.
