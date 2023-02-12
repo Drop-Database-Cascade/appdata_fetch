@@ -6,9 +6,9 @@ This project is designed to run Airflow ETL pipelines and its dependencies in a 
 More info on the AppTweek Api data source is available here: https://developers.apptweak.com/reference/app-metrics
 
 ## Requirements
-- Docker
-- Docker Compose
-- WSL 2 recommended if running docker on Windows (due to certain bugs with mounting container volumns locally)
+- Docker - https://docs.docker.com/desktop/windows/wsl/
+- Docker Compose - https://docs.docker.com/desktop/windows/wsl/
+- WSL 2 recommended if running docker on Windows (due to certain bugs with mounting container volumns locally) - https://learn.microsoft.com/en-us/windows/wsl/install
 
 ## Services
 
@@ -26,7 +26,9 @@ extract_app_data_ETL does the following:
     1. Check Total Credit Costs: Calculates the expected cost of the API request and writes the output to the expected cost output folder. If the cost is greater than the budget (Airflow user input), the pipeline is failed.
     2. Create Date Dim table: Creates a date dimension CSV table (overwrite) on a daily basis from 2010 to the end date (Airflow input).
     3. Create Country Dim table: Maps all possible AppTweak country codes to their respective full country names.
-    4. Fetch Metrics All Apps: Based on user-input files (country list CSVs, music apps Python file) and Airflow variables, sends requests to the AppTweak API and writes the output to CSV files in the respective output folders. The DAG order is run as follows: check_api_costs >> [dim_country_load, dim_date_load] >> fetch_metrics.
+    4. Fetch Metrics All Apps: Based on user-input files (country list CSVs, music apps Python file) and Airflow variables, sends requests to the AppTweak API and writes the output to CSV files in the respective output folders. 
+    
+    The DAG order is run as follows: check_api_costs >> [dim_country_load, dim_date_load] >> fetch_metrics.
 
 test_extract_app_data_ETL does the following:
     1. Use pytest to unit test each of the class methods used by the extract_app_data_ETL dag.
@@ -61,7 +63,7 @@ Edit the countries list csv for each app, this is the country list that gets loo
 - The host directory for data mapping can be overridden by setting the `HOST_FILE_DIR` environment variable.
 - This app was developed using WSL Ubuntu distribution for windows, other OS configurations have not been tested.
 - If using windows, it's recommended you run docker compose from the project root using WSL terminal (Ubuntu) - it's recommended you set the HOST_FILE_DIR to a path in /mnt/c/... so that you can interact with the input and output files using windows programs. This was tested to be the most effective and reliable configuration. Once docker compose has been run, you may find it convenient to start and stop the container app using Docker Desktop in Windows. 
-- Using the AppTweak API requires that you create an account with AppTweak API. Large data requests can be quite expensive - use at your own risk.
+- Using the AppTweak API requires that you create an account with AppTweak API. View the documentation for details around config and pricing. Large data requests can be quite expensive - use at your own risk.
 
 ## Code Structure
 - An inheritance structure of the classes utilised by extract_app_data_dag is located at .class_inheritance_structure.pdf
@@ -152,6 +154,10 @@ Edit the countries list csv for each app, this is the country list that gets loo
 │   ├── test_app_metrics_request.py
 │   ├── test_dim_table_class.py
 │   └── test_local_file_operations_class_test.py
+├── diagrams
+│   ├── airflow_dag_diagram.pdf
+│   ├── class_inheritance_structure.pdf
+│   └── deployment_architecture_diagram.pdf
 ├── .env
 ├── requirements.txt
 ├── docker_bash_commands
