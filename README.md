@@ -67,7 +67,7 @@ Edit the countries list csv for each app, this is the country list that gets loo
 - Using the AppTweak API requires that you create an account with AppTweak API. View the documentation for details around config and pricing. Large data requests can be quite expensive - use at your own risk.
 
 ## Code Structure
-- An inheritance structure of the classes utilised by extract_app_data_dag is located at .class_inheritance_structure.pdf
+- Detailed diagrams, including service architecture, DAGs and class inheritance are located at .diagrams
 - Airflow dags are located at ./airflow/dags
 - Core ETL code called by extract_app_data_dag located at ./etl_scripts
 - Unit test functions using pytest are located at./testing
